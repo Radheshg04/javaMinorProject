@@ -3,40 +3,44 @@ package project;
 import java.util.Random;
 import java.util.Scanner;
 
-public class project extends games{
+public class project extends RockPaperScissors{
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         int choice,n;
 
         do {
             System.out.println("Menu:");
             System.out.println("1. Play Sudoku (NxN)");
             System.out.println("2. Play Tic Tac Toe (NxN)");
-            System.out.println("3. Exit");
+            System.out.println("3. Play Rock, Paper, Scissors!");
+            System.out.println("4. Exit");
             System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
+            choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
                     System.out.println("Enter to be size of sudoku board (NxN): ");
-                    n = scanner.nextInt();
+                    n = sc.nextInt();
                     playSudoku(n);
                     break;
                 case 2:
                     System.out.println("Enter to be size of tic tac toe board (NxN): ");
-                    n = scanner.nextInt();
+                    n = sc.nextInt();
                     playTicTacToe(n);
                     break;
                 case 3:
+                    RockPaperScissorsGame();
+                    break;
+                case 4:
                     System.out.println("Goodbye!");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
             }
-        } while (choice != 3);
+        } while (choice != 4);
 
-        scanner.close();
+        sc.close();
     }
 
     private static void playSudoku(int n) {
@@ -171,8 +175,8 @@ public class project extends games{
 
 class RockPaperScissors {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    public static void RockPaperScissorsGame() {
+        Scanner sc = new Scanner(System.in);
         Random random = new Random();
 
         String[] choices = {"rock", "paper", "scissors"};
@@ -182,10 +186,10 @@ class RockPaperScissors {
 
         while (true) {
             System.out.print("Your choice: ");
-            String playerChoice = scanner.nextLine().toLowerCase();
+            String playerChoice = sc.nextLine().toLowerCase();
 
             if (playerChoice.equals("quit")) {
-                System.out.println("Thanks for playing! 👋");
+                System.out.println("Thanks for playing!");
                 break;
             }
 
@@ -194,29 +198,29 @@ class RockPaperScissors {
                 continue;
             }
 
-            int computerIndex = random.nextInt(3);
-            String computerChoice = choices[computerIndex];
+            int comp_i = random.nextInt(3);
+            String comp_choice = choices[comp_i];
 
-            System.out.println("Computer's choice: " + computerChoice);
+            System.out.println("Computer's choice: " + comp_choice);
 
-            String result = determineWinner(playerChoice, computerChoice);
+            String result = checkWinner(playerChoice, comp_choice);
             System.out.println(result);
         }
 
-        scanner.close();
+        sc.close();
     }
 
-    private static String determineWinner(String playerChoice, String computerChoice) {
-        if (playerChoice.equals(computerChoice)) {
-            return "It's a tie! 😐";
+    private static String checkWinner(String playerChoice, String comp_choice) {
+        if (playerChoice.equals(comp_choice)) {
+            return "It's a tie!";
         } else if (
-            (playerChoice.equals("rock") && computerChoice.equals("scissors")) ||
-            (playerChoice.equals("scissors") && computerChoice.equals("paper")) ||
-            (playerChoice.equals("paper") && computerChoice.equals("rock"))
+            (playerChoice.equals("rock") && comp_choice.equals("scissors")) ||
+            (playerChoice.equals("scissors") && comp_choice.equals("paper")) ||
+            (playerChoice.equals("paper") && comp_choice.equals("rock"))
         ) {
-            return "You win! 🎉";
+            return "You win!";
         } else {
-            return "Computer wins! 💻";
+            return "Computer wins!";
         }
     }
 }
