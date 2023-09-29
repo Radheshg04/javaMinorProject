@@ -6,3 +6,4 @@ For any changes you commit, Write in readme.
 
     - Added the Initial Files
     - Implemented logic for tic-tac-toe and sudoku board generation
+    - Improved the documentation
