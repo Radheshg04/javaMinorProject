@@ -1,5 +1,3 @@
-package project;
-
 import java.util.Random;
 import java.util.Scanner;
 
@@ -179,10 +177,10 @@ class RockPaperScissors {
         Scanner sc = new Scanner(System.in);
         Random random = new Random();
 
-        String[] choices = {"rock", "paper", "scissors"};
+        String[] choices = {"r", "p", "s"};
 
         System.out.println("Welcome to Rock, Paper, Scissors!");
-        System.out.println("Enter your choice (rock, paper, scissors, or quit to exit):");
+        System.out.println("Enter your choice (rock(r), paper(p), scissors(s), or quit to exit):");
 
         while (true) {
             System.out.print("Your choice: ");
@@ -193,7 +191,9 @@ class RockPaperScissors {
                 break;
             }
 
-            if (!playerChoice.equals("rock") && !playerChoice.equals("paper") && !playerChoice.equals("scissors")) {
+            if (!playerChoice.equals("r") && 
+            !playerChoice.equals("p") && 
+            !playerChoice.equals("s")) {
                 System.out.println("Invalid choice. Please choose rock, paper, scissors, or quit to exit.");
                 continue;
             }
@@ -214,9 +214,9 @@ class RockPaperScissors {
         if (playerChoice.equals(comp_choice)) {
             return "It's a tie!";
         } else if (
-            (playerChoice.equals("rock") && comp_choice.equals("scissors")) ||
-            (playerChoice.equals("scissors") && comp_choice.equals("paper")) ||
-            (playerChoice.equals("paper") && comp_choice.equals("rock"))
+            (playerChoice.equals("r") && comp_choice.equals("s")) ||
+            (playerChoice.equals("s") && comp_choice.equals("p")) ||
+            (playerChoice.equals("p") && comp_choice.equals("r"))
         ) {
             return "You win!";
         } else {
@@ -224,7 +224,3 @@ class RockPaperScissors {
         }
     }
 }
-
-
-
-    
