@@ -4,172 +4,148 @@ import java.util.Scanner;
 public class project extends RockPaperScissors{
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int choice,n;
+        int choice;
 
         do {
             System.out.println("Menu:");
-            System.out.println("1. Play Sudoku (NxN)");
-            System.out.println("2. Play Tic Tac Toe (NxN)");
-            System.out.println("3. Play Rock, Paper, Scissors!");
-            System.out.println("4. Exit");
+            System.out.println("1. Play Tic Tac Toe (NxN)");
+            System.out.println("2. Play Rock, Paper, Scissors!");
+            System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
             choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
-                    System.out.println("Enter to be size of sudoku board (NxN): ");
-                    n = sc.nextInt();
-                    playSudoku(n);
+                    playTicTacToe();
                     break;
                 case 2:
-                    System.out.println("Enter to be size of tic tac toe board (NxN): ");
-                    n = sc.nextInt();
-                    playTicTacToe(n);
-                    break;
-                case 3:
                     RockPaperScissorsGame();
                     break;
-                case 4:
+                case 3:
                     System.out.println("Goodbye!");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
             }
-        } while (choice != 4);
-
+        } while (choice!=3);
         sc.close();
     }
-
-    private static void playSudoku(int n) {
-        System.out.println("Sudoku game is under construction.");
-        int[][] board = new int[n][n]; 
-
-        Random random = new Random();
-
-        int rand1,rand2,filler_rand;
-
-
-        for (int i = 0; i < n; i++) {
-            rand1 = random.nextInt(1,n);
-            rand2 = random.nextInt(1,n);
-            filler_rand = random.nextInt(1,n);
-            do {
-                rand1 = random.nextInt(n);
-                rand2 = random.nextInt(n);
-            } while (board[rand1][rand2] != 0);
-            board[rand1][rand2] = filler_rand;
-        }
-        
-        System.out.println("-".repeat(4*n + 1));
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if(j==0)
-                System.out.print("|");
-                System.out.print(" " + board[i][j] + " |");
-            }
-            System.out.println();
-            System.out.println("-".repeat(4*n + 1));
-        }
-    }
-
-    public static void displayTicTacToe(int[][] board,int n){
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                System.out.print(" " + board[i][j]);
-                if(j!=n-1)
-                System.out.print(" |");
-            }
-            System.out.println();
-            if(i!=n-1)
-            System.out.println("-".repeat(4*n));
-        }
-        System.out.println();
-    }
-
-    public static int points(int[][] board, int n){
-        int i,j,countP1=0,countP2=0;
-        for(i=0;i<=n;i++){
-            for(j=0;j<=n;j++){
-                if(board[i][j]=='X')
-                countP1+=1;
-                else if(board[i][j]=='O')
-                countP2+=1;
-            }
-            if(countP1==n){
-                return 1;
-            }
-            else if(countP2==n){
-                return 2;
-            }
-            else{
-                countP1=0;
-                countP2=0;
-            }
-        }
-        for(j=0;j<=n;j++){
-            for(i=0;i<=n;i++){
-                if(board[i][j]=='X')
-                countP1+=1;
-                else if(board[i][j]=='O')
-                countP2+=1;
-            }
-            if(countP1==n){
-                return 1;
-            }
-            else if(countP2==n){
-                return 2;
-            }
-            else{
-                countP1=0;
-                countP2=0;
-            }
-        }
-        for(i=0;i<=n;i++){
-            if(board[i][i]=='X'){
-                countP1+=1;
-            }
-            else if(board[i][i]=='O'){
-                countP2+=1;
-            }
-            else{
-                countP1=0;
-                countP2=0;
-            }
-        }
-        for(i=n;i<=0;i--){
-            if(board[i][i]=='X'){
-                countP1+=1;
-            }
-            else if(board[i][i]=='O'){
-                countP2+=1;
-            }
-            else{
-                countP1=0;
-                countP2=0;
-            }
-        }
-        return 0;
-    }
-
-    public static void checkWinner(int[][] board,int n){
-        
-        
-    }
     
-    private static void playTicTacToe(int n) {
-        if(n<=1){
-            System.out.println("Play area too small. ");
+    private static void playTicTacToe() {
+        System.out.println("Welcome to Tic Tac Toe!");
+        System.out.print("Enter the size of the Tic Tac Toe board (3 or greater): ");
+        Scanner sc = new Scanner(System.in);
+        int boardSize = sc.nextInt();
+
+        if (boardSize < 3) {
+            System.out.println("Play area too small for Tic Tac Toe.");
             return;
         }
-        System.out.println("Tic Tac Toe game is under construction.");
-        System.out.println();
-        int[][] board = new int[n][n]; 
-        // System.out.println("-".repeat(4*n));
-        displayTicTacToe(board,n);
-        checkWinner(board,n);
+
+        char[][] board = new char[boardSize][boardSize];
+        initializeTicTacToe(board, boardSize);
+        printTicTacToe(board, boardSize);
+
+        char currentPlayer = 'X';
+        boolean gameEnded = false;
+
+        while (!gameEnded) {
+            System.out.print("Player " + currentPlayer + ", enter row and column (e.g., 1 2): ");
+            int row = sc.nextInt() - 1;
+            int col = sc.nextInt() - 1;
+
+            if (isValidMove(board, row, col)) {
+                board[row][col] = currentPlayer;
+                printTicTacToe(board, boardSize);
+
+                if (isGameWon(board, currentPlayer)) {
+                    System.out.println("Player " + currentPlayer + " wins!");
+                    gameEnded = true;
+                } else if (isBoardFull(board)) {
+                    System.out.println("It's a draw!");
+                    gameEnded = true;
+                }
+
+                currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+            } else {
+                System.out.println("Invalid move. Try again.");
+            }
+        }
+    }
+
+    private static void initializeTicTacToe(char[][] board, int n) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = ' ';
+            }
+        }
+    }
+
+    private static void printTicTacToe(char[][] board, int n) {
+        System.out.println("Tic Tac Toe board:");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.print(board[i][j]);
+                if (j != n - 1) {
+                    System.out.print(" | ");
+                }
+            }
+            System.out.println();
+            if (i != n - 1) {
+                System.out.println("-".repeat(4 * n - 1));
+            }
+        }
+    }
+
+    private static boolean isValidMove(char[][] board, int row, int col) {
+        return row >= 0 && row < board.length && col >= 0 && col < board.length && board[row][col] == ' ';
+    }
+
+    private static boolean isGameWon(char[][] board, char player) {
+        int n = board.length;
+        for (int i = 0; i < n; i++) {
+            boolean rowWin = true;
+            boolean colWin = true;
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] != player) {
+                    rowWin = false;
+                }
+                if (board[j][i] != player) {
+                    colWin = false;
+                }
+            }
+            if (rowWin || colWin) {
+                return true;
+            }
+        }
+        boolean diagonal1Win = true;
+        boolean diagonal2Win = true;
+        for (int i = 0; i < n; i++) {
+            if (board[i][i] != player) {
+                diagonal1Win = false;
+            }
+            if (board[i][n - 1 - i] != player) {
+                diagonal2Win = false;
+            }
+        }
+    
+        return diagonal1Win || diagonal2Win;
+    }
+    
+
+    private static boolean isBoardFull(char[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
+
 
 class RockPaperScissors {
 
