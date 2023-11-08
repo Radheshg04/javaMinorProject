@@ -1,10 +1,18 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class project extends RockPaperScissors{
+interface skel{
+    boolean isValidMove();
+}
+
+abstract class Game {
+    public abstract String checkWinner();
+}
+
+public class project extends RockPaperScissors implements skel{
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int choice;
+        int choice=0;
 
         do {
             System.out.println("Menu:");
@@ -12,7 +20,13 @@ public class project extends RockPaperScissors{
             System.out.println("2. Play Rock, Paper, Scissors!");
             System.out.println("3. Exit");
             System.out.print("Enter your choice: ");
-            choice = sc.nextInt();
+            try {
+                choice = sc.nextInt();
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine();
+                continue;
+            }
 
             switch (choice) {
                 case 1:
@@ -28,7 +42,7 @@ public class project extends RockPaperScissors{
                     System.out.println("Invalid choice. Please try again.");
                     break;
             }
-        } while (choice!=3);
+        } while (choice != 3);
         sc.close();
     }
     
@@ -36,10 +50,20 @@ public class project extends RockPaperScissors{
         System.out.println("Welcome to Tic Tac Toe!");
         System.out.print("Enter the size of the Tic Tac Toe board (3 or greater): ");
         Scanner sc = new Scanner(System.in);
-        int boardSize = sc.nextInt();
+        int boardSize;
+        try {
+            boardSize = sc.nextInt();
+        } catch (java.util.InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            return;
+        }
 
         if (boardSize < 3) {
             System.out.println("Play area too small for Tic Tac Toe.");
+            return;
+        }
+        else if (boardSize > 9){
+            System.out.println("Play area too large for Tic Tac Toe.");
             return;
         }
 
@@ -52,8 +76,16 @@ public class project extends RockPaperScissors{
 
         while (!gameEnded) {
             System.out.print("Player " + currentPlayer + ", enter row and column (e.g., 1 2): ");
-            int row = sc.nextInt() - 1;
-            int col = sc.nextInt() - 1;
+            int row;
+            int col;
+            try {
+                row = sc.nextInt() - 1;
+                col = sc.nextInt() - 1;
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Invalid input. Please enter two numbers.");
+                sc.nextLine();
+                continue;
+            }
 
             if (isValidMove(board, row, col)) {
                 board[row][col] = currentPlayer;
@@ -87,12 +119,12 @@ public class project extends RockPaperScissors{
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 System.out.print(board[i][j]);
-                if (j != n - 1) {
+                if(j != n-1) {
                     System.out.print(" | ");
                 }
             }
             System.out.println();
-            if (i != n - 1) {
+            if(i!=n-1) {
                 System.out.println("-".repeat(4 * n - 1));
             }
         }
@@ -144,10 +176,14 @@ public class project extends RockPaperScissors{
         }
         return true;
     }
+
+    @Override
+    public boolean isValidMove() {
+        throw new UnsupportedOperationException("Unimplemented method 'isValidMove'");
+    }
 }
 
-
-class RockPaperScissors {
+class RockPaperScissors extends Game{
 
     public static void RockPaperScissorsGame() {
         Scanner sc = new Scanner(System.in);
@@ -186,7 +222,7 @@ class RockPaperScissors {
         sc.close();
     }
 
-    private static String checkWinner(String playerChoice, String comp_choice) {
+    public static String checkWinner(String playerChoice, String comp_choice) {
         if (playerChoice.equals(comp_choice)) {
             return "It's a tie!";
         } else if (
@@ -198,5 +234,10 @@ class RockPaperScissors {
         } else {
             return "Computer wins!";
         }
+    }
+
+    @Override
+    public String checkWinner() {
+        throw new UnsupportedOperationException("Unimplemented method 'checkWinner'");
     }
 }
