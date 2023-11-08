@@ -142,7 +142,6 @@ public class project extends RockPaperScissors implements skel{
             for (int j = 0; j < n; j++) {
                 if (board[i][j] != player) {
                     rowWin = false;
-                    
                 }
                 if (board[j][i] != player) {
                     colWin = false;
