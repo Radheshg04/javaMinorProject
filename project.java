@@ -26,6 +26,8 @@ public class project extends RockPaperScissors implements skel{
                 System.out.println("Invalid input. Please enter a number.");
                 sc.nextLine();
                 continue;
+            } catch(java.util.NoSuchElementException a){
+                break;
             }
 
             switch (choice) {
@@ -200,6 +202,7 @@ class RockPaperScissors extends Game{
 
             if (playerChoice.equals("quit")) {
                 System.out.println("Thanks for playing!");
+                System.exit(0);
                 break;
             }
 
