@@ -135,7 +135,7 @@ public class Project extends RockPaperScissors implements Skel {
                 System.out.print("\n");
             }
         }
-    }
+    } //added line break
 
     private static boolean isValidMove(char[][] board, int row, int col) {
         return row >= 0 && row < board.length && col >= 0 && col < board.length && board[row][col] == ' ';
