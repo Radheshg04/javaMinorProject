@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
-interface skel{
+interface Skel {
     boolean isValidMove();
 }
 
@@ -9,10 +9,10 @@ abstract class Game {
     public abstract String checkWinner();
 }
 
-public class project extends RockPaperScissors implements skel{
+public class Project extends RockPaperScissors implements Skel {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int choice=0;
+        int choice = 0;
 
         do {
             System.out.println("Menu:");
@@ -26,7 +26,7 @@ public class project extends RockPaperScissors implements skel{
                 System.out.println("Invalid input. Please enter a number.");
                 sc.nextLine();
                 continue;
-            } catch(java.util.NoSuchElementException a){
+            } catch (java.util.NoSuchElementException a) {
                 break;
             }
 
@@ -47,7 +47,7 @@ public class project extends RockPaperScissors implements skel{
         } while (choice != 3);
         sc.close();
     }
-    
+
     private static void playTicTacToe() {
         System.out.println("Welcome to Tic Tac Toe!");
         System.out.print("Enter the size of the Tic Tac Toe board (3 or greater): ");
@@ -63,8 +63,7 @@ public class project extends RockPaperScissors implements skel{
         if (boardSize < 3) {
             System.out.println("Play area too small for Tic Tac Toe.");
             return;
-        }
-        else if (boardSize > 9){
+        } else if (boardSize > 9) {
             System.out.println("Play area too large for Tic Tac Toe.");
             return;
         }
@@ -121,13 +120,19 @@ public class project extends RockPaperScissors implements skel{
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 System.out.print(board[i][j]);
-                if(j != n-1) {
+                if (j != n - 1) {
                     System.out.print(" | ");
                 }
             }
             System.out.println();
-            if(i!=n-1) {
-                System.out.println("-".repeat(4 * n - 1));
+            if (i != n - 1) {
+                for (int k = 0; k < n; k++) {
+                    System.out.print("---");
+                    if (k != n - 1) {
+                        System.out.print("+");
+                    }
+                }
+                System.out.println();
             }
         }
     }
@@ -163,10 +168,9 @@ public class project extends RockPaperScissors implements skel{
                 diagonal2Win = false;
             }
         }
-    
+
         return diagonal1Win || diagonal2Win;
     }
-    
 
     private static boolean isBoardFull(char[][] board) {
         for (int i = 0; i < board.length; i++) {
@@ -185,7 +189,7 @@ public class project extends RockPaperScissors implements skel{
     }
 }
 
-class RockPaperScissors extends Game{
+class RockPaperScissors extends Game {
 
     public static void RockPaperScissorsGame() {
         Scanner sc = new Scanner(System.in);
@@ -202,13 +206,12 @@ class RockPaperScissors extends Game{
 
             if (playerChoice.equals("quit")) {
                 System.out.println("Thanks for playing!");
-                System.exit(0);
                 break;
             }
 
-            if (!playerChoice.equals("r") && 
-            !playerChoice.equals("p") && 
-            !playerChoice.equals("s")) {
+            if (!playerChoice.equals("r") &&
+                !playerChoice.equals("p") &&
+                !playerChoice.equals("s")) {
                 System.out.println("Invalid choice. Please choose rock, paper, scissors, or quit to exit.");
                 continue;
             }
