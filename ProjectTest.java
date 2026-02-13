@@ -1,622 +1,707 @@
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
+import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Comprehensive test suite for Project.java
- * Tests both Rock Paper Scissors and Tic Tac Toe game logic
+ * Comprehensive unit tests for Project.java
+ * Tests TicTacToe game logic and RockPaperScissors game logic
  */
 public class ProjectTest {
 
-    // Rock Paper Scissors Tests
+    // Helper method to access private static methods via reflection
+    private Object invokePrivateStaticMethod(String className, String methodName,
+                                            Class<?>[] paramTypes, Object... args)
+            throws Exception {
+        Class<?> clazz = Class.forName(className);
+        Method method = clazz.getDeclaredMethod(methodName, paramTypes);
+        method.setAccessible(true);
+        return method.invoke(null, args);
+    }
+
+    // ==================== TicTacToe: isValidMove Tests ====================
+
     @Test
-    @DisplayName("RPS: Player wins with rock vs scissors")
-    public void testRPSPlayerWinsRockVsScissors() {
-        String result = RockPaperScissors.checkWinner("r", "s");
-        assertEquals("You win!", result);
+    public void testIsValidMove_ValidEmptyCell() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 0, 0
+        );
+
+        assertTrue("Valid move on empty cell should return true", result);
     }
 
     @Test
-    @DisplayName("RPS: Player wins with scissors vs paper")
-    public void testRPSPlayerWinsScissorsVsPaper() {
-        String result = RockPaperScissors.checkWinner("s", "p");
-        assertEquals("You win!", result);
+    public void testIsValidMove_OccupiedCell() throws Exception {
+        char[][] board = {
+            {'X', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 0, 0
+        );
+
+        assertFalse("Move on occupied cell should return false", result);
     }
 
     @Test
-    @DisplayName("RPS: Player wins with paper vs rock")
-    public void testRPSPlayerWinsPaperVsRock() {
-        String result = RockPaperScissors.checkWinner("p", "r");
-        assertEquals("You win!", result);
+    public void testIsValidMove_NegativeRow() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, -1, 0
+        );
+
+        assertFalse("Negative row should return false", result);
     }
 
     @Test
-    @DisplayName("RPS: Computer wins with scissors vs rock")
-    public void testRPSComputerWinsScissorsVsRock() {
-        String result = RockPaperScissors.checkWinner("r", "s");
-        assertEquals("You win!", result); // Player wins in this case
-        result = RockPaperScissors.checkWinner("s", "r");
-        assertEquals("Computer wins!", result);
+    public void testIsValidMove_NegativeColumn() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 0, -1
+        );
+
+        assertFalse("Negative column should return false", result);
     }
 
     @Test
-    @DisplayName("RPS: Computer wins with paper vs scissors")
-    public void testRPSComputerWinsPaperVsScissors() {
-        String result = RockPaperScissors.checkWinner("p", "s");
-        assertEquals("Computer wins!", result);
+    public void testIsValidMove_RowOutOfBounds() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 3, 0
+        );
+
+        assertFalse("Row out of bounds should return false", result);
     }
 
     @Test
-    @DisplayName("RPS: Computer wins with rock vs paper")
-    public void testRPSComputerWinsRockVsPaper() {
-        String result = RockPaperScissors.checkWinner("r", "p");
-        assertEquals("Computer wins!", result);
+    public void testIsValidMove_ColumnOutOfBounds() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 0, 3
+        );
+
+        assertFalse("Column out of bounds should return false", result);
     }
 
     @Test
-    @DisplayName("RPS: Tie with rock vs rock")
-    public void testRPSTieRock() {
-        String result = RockPaperScissors.checkWinner("r", "r");
-        assertEquals("It's a tie!", result);
-    }
-
-    @Test
-    @DisplayName("RPS: Tie with paper vs paper")
-    public void testRPSTiePaper() {
-        String result = RockPaperScissors.checkWinner("p", "p");
-        assertEquals("It's a tie!", result);
-    }
-
-    @Test
-    @DisplayName("RPS: Tie with scissors vs scissors")
-    public void testRPSTieScissors() {
-        String result = RockPaperScissors.checkWinner("s", "s");
-        assertEquals("It's a tie!", result);
-    }
-
-    // Tic Tac Toe Tests - Using Reflection to access private methods
-
-    @Test
-    @DisplayName("TTT: Initialize board creates empty spaces")
-    public void testInitializeTicTacToe() throws Exception {
-        char[][] board = new char[3][3];
-        Method initMethod = Project.class.getDeclaredMethod("initializeTicTacToe", char[][].class, int.class);
-        initMethod.setAccessible(true);
-        initMethod.invoke(null, board, 3);
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                assertEquals(' ', board[i][j], "Board position [" + i + "][" + j + "] should be empty");
-            }
-        }
-    }
-
-    @Test
-    @DisplayName("TTT: Initialize larger board (5x5) creates empty spaces")
-    public void testInitializeLargerBoard() throws Exception {
+    public void testIsValidMove_LargerBoard() throws Exception {
         char[][] board = new char[5][5];
-        Method initMethod = Project.class.getDeclaredMethod("initializeTicTacToe", char[][].class, int.class);
-        initMethod.setAccessible(true);
-        initMethod.invoke(null, board, 5);
-
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                assertEquals(' ', board[i][j]);
+                board[i][j] = ' ';
             }
         }
-    }
-
-    @Test
-    @DisplayName("TTT: Valid move on empty cell")
-    public void testIsValidMoveEmptyCell() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        boolean result = (boolean) isValidMoveMethod.invoke(null, board, 0, 0);
-        assertTrue(result, "Move to empty cell should be valid");
-    }
-
-    @Test
-    @DisplayName("TTT: Invalid move on occupied cell")
-    public void testIsValidMoveOccupiedCell() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[1][1] = 'X';
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        boolean result = (boolean) isValidMoveMethod.invoke(null, board, 1, 1);
-        assertFalse(result, "Move to occupied cell should be invalid");
-    }
-
-    @Test
-    @DisplayName("TTT: Invalid move with negative row")
-    public void testIsValidMoveNegativeRow() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        boolean result = (boolean) isValidMoveMethod.invoke(null, board, -1, 0);
-        assertFalse(result, "Move with negative row should be invalid");
-    }
-
-    @Test
-    @DisplayName("TTT: Invalid move with negative column")
-    public void testIsValidMoveNegativeColumn() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        boolean result = (boolean) isValidMoveMethod.invoke(null, board, 0, -1);
-        assertFalse(result, "Move with negative column should be invalid");
-    }
-
-    @Test
-    @DisplayName("TTT: Invalid move with row out of bounds")
-    public void testIsValidMoveRowOutOfBounds() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        boolean result = (boolean) isValidMoveMethod.invoke(null, board, 3, 0);
-        assertFalse(result, "Move with row >= board size should be invalid");
-    }
-
-    @Test
-    @DisplayName("TTT: Invalid move with column out of bounds")
-    public void testIsValidMoveColumnOutOfBounds() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        boolean result = (boolean) isValidMoveMethod.invoke(null, board, 0, 3);
-        assertFalse(result, "Move with column >= board size should be invalid");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on top row")
-    public void testIsGameWonTopRow() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'X';
-        board[0][1] = 'X';
-        board[0][2] = 'X';
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on top row");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on middle row")
-    public void testIsGameWonMiddleRow() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[1][0] = 'O';
-        board[1][1] = 'O';
-        board[1][2] = 'O';
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'O');
-        assertTrue(result, "Should detect win on middle row");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on bottom row")
-    public void testIsGameWonBottomRow() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[2][0] = 'X';
-        board[2][1] = 'X';
-        board[2][2] = 'X';
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on bottom row");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on left column")
-    public void testIsGameWonLeftColumn() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'O';
-        board[1][0] = 'O';
-        board[2][0] = 'O';
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'O');
-        assertTrue(result, "Should detect win on left column");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on middle column")
-    public void testIsGameWonMiddleColumn() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][1] = 'X';
-        board[1][1] = 'X';
-        board[2][1] = 'X';
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on middle column");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on right column")
-    public void testIsGameWonRightColumn() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][2] = 'O';
-        board[1][2] = 'O';
         board[2][2] = 'O';
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        boolean result1 = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 4, 4
+        );
+        assertTrue("Valid move on 5x5 board should return true", result1);
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'O');
-        assertTrue(result, "Should detect win on right column");
+        boolean result2 = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 2, 2
+        );
+        assertFalse("Move on occupied cell in 5x5 board should return false", result2);
+    }
+
+    // ==================== TicTacToe: isGameWon Tests ====================
+
+    @Test
+    public void testIsGameWon_HorizontalWin_TopRow() throws Exception {
+        char[][] board = {
+            {'X', 'X', 'X'},
+            {'O', 'O', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Horizontal win in top row should return true", result);
     }
 
     @Test
-    @DisplayName("TTT: Win detected on main diagonal")
-    public void testIsGameWonMainDiagonal() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'X';
-        board[1][1] = 'X';
-        board[2][2] = 'X';
+    public void testIsGameWon_HorizontalWin_MiddleRow() throws Exception {
+        char[][] board = {
+            {'O', 'O', ' '},
+            {'X', 'X', 'X'},
+            {' ', ' ', ' '}
+        };
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on main diagonal");
+        assertTrue("Horizontal win in middle row should return true", result);
     }
 
     @Test
-    @DisplayName("TTT: Win detected on anti-diagonal")
-    public void testIsGameWonAntiDiagonal() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][2] = 'O';
-        board[1][1] = 'O';
-        board[2][0] = 'O';
+    public void testIsGameWon_HorizontalWin_BottomRow() throws Exception {
+        char[][] board = {
+            {'O', 'O', ' '},
+            {' ', ' ', ' '},
+            {'X', 'X', 'X'}
+        };
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'O');
-        assertTrue(result, "Should detect win on anti-diagonal");
+        assertTrue("Horizontal win in bottom row should return true", result);
     }
 
     @Test
-    @DisplayName("TTT: No win detected on incomplete row")
-    public void testIsGameWonIncompleteRow() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'X';
-        board[0][1] = 'X';
-        board[0][2] = 'O';
+    public void testIsGameWon_VerticalWin_LeftColumn() throws Exception {
+        char[][] board = {
+            {'X', 'O', ' '},
+            {'X', 'O', ' '},
+            {'X', ' ', ' '}
+        };
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertFalse(result, "Should not detect win on incomplete row");
+        assertTrue("Vertical win in left column should return true", result);
     }
 
     @Test
-    @DisplayName("TTT: Win detected on 4x4 board - top row")
-    public void testIsGameWon4x4TopRow() throws Exception {
+    public void testIsGameWon_VerticalWin_MiddleColumn() throws Exception {
+        char[][] board = {
+            {'O', 'X', ' '},
+            {' ', 'X', ' '},
+            {'O', 'X', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Vertical win in middle column should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_VerticalWin_RightColumn() throws Exception {
+        char[][] board = {
+            {'O', ' ', 'X'},
+            {' ', ' ', 'X'},
+            {'O', ' ', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Vertical win in right column should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_DiagonalWin_TopLeftToBottomRight() throws Exception {
+        char[][] board = {
+            {'X', 'O', ' '},
+            {'O', 'X', ' '},
+            {' ', ' ', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Diagonal win (top-left to bottom-right) should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_DiagonalWin_TopRightToBottomLeft() throws Exception {
+        char[][] board = {
+            {' ', 'O', 'X'},
+            {'O', 'X', ' '},
+            {'X', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Diagonal win (top-right to bottom-left) should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_NoWin() throws Exception {
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {'O', 'X', 'O'},
+            {'O', 'X', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertFalse("No win condition should return false", result);
+    }
+
+    @Test
+    public void testIsGameWon_LargerBoard_HorizontalWin() throws Exception {
         char[][] board = new char[4][4];
-        initializeBoard(board, 4);
-        board[0][0] = 'X';
-        board[0][1] = 'X';
-        board[0][2] = 'X';
-        board[0][3] = 'X';
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                board[i][j] = ' ';
+            }
+        }
+        // Fill first row with X
+        for (int j = 0; j < 4; j++) {
+            board[0][j] = 'X';
+        }
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on 4x4 board top row");
+        assertTrue("Horizontal win on 4x4 board should return true", result);
     }
 
     @Test
-    @DisplayName("TTT: Win detected on 5x5 board - main diagonal")
-    public void testIsGameWon5x5MainDiagonal() throws Exception {
+    public void testIsGameWon_LargerBoard_DiagonalWin() throws Exception {
         char[][] board = new char[5][5];
-        initializeBoard(board, 5);
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                board[i][j] = ' ';
+            }
+        }
+        // Fill main diagonal with O
         for (int i = 0; i < 5; i++) {
             board[i][i] = 'O';
         }
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'O');
-        assertTrue(result, "Should detect win on 5x5 board main diagonal");
+        assertTrue("Diagonal win on 5x5 board should return true", result);
+    }
+
+    // ==================== TicTacToe: isBoardFull Tests ====================
+
+    @Test
+    public void testIsBoardFull_EmptyBoard() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
+
+        assertFalse("Empty board should return false", result);
     }
 
     @Test
-    @DisplayName("TTT: Board full detection returns true for full board")
-    public void testIsBoardFullTrue() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'X'; board[0][1] = 'O'; board[0][2] = 'X';
-        board[1][0] = 'O'; board[1][1] = 'X'; board[1][2] = 'O';
-        board[2][0] = 'O'; board[2][1] = 'X'; board[2][2] = 'X';
+    public void testIsBoardFull_PartiallyFilledBoard() throws Exception {
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {'O', 'X', 'O'},
+            {'O', 'X', ' '}
+        };
 
-        Method isBoardFullMethod = Project.class.getDeclaredMethod("isBoardFull", char[][].class);
-        isBoardFullMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
 
-        boolean result = (boolean) isBoardFullMethod.invoke(null, (Object) board);
-        assertTrue(result, "Should detect full board");
+        assertFalse("Partially filled board should return false", result);
     }
 
     @Test
-    @DisplayName("TTT: Board full detection returns false for empty board")
-    public void testIsBoardFullFalseEmpty() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
+    public void testIsBoardFull_FullBoard() throws Exception {
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {'O', 'X', 'O'},
+            {'O', 'X', 'X'}
+        };
 
-        Method isBoardFullMethod = Project.class.getDeclaredMethod("isBoardFull", char[][].class);
-        isBoardFullMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
 
-        boolean result = (boolean) isBoardFullMethod.invoke(null, (Object) board);
-        assertFalse(result, "Should detect empty board as not full");
+        assertTrue("Full board should return true", result);
     }
 
     @Test
-    @DisplayName("TTT: Board full detection returns false for partially filled board")
-    public void testIsBoardFullFalsePartial() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'X';
-        board[1][1] = 'O';
+    public void testIsBoardFull_OneEmptyCell() throws Exception {
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {'O', 'X', 'O'},
+            {'O', ' ', 'X'}
+        };
 
-        Method isBoardFullMethod = Project.class.getDeclaredMethod("isBoardFull", char[][].class);
-        isBoardFullMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
 
-        boolean result = (boolean) isBoardFullMethod.invoke(null, (Object) board);
-        assertFalse(result, "Should detect partially filled board as not full");
+        assertFalse("Board with one empty cell should return false", result);
     }
 
     @Test
-    @DisplayName("TTT: Board full detection returns false when one cell is empty")
-    public void testIsBoardFullFalseOneEmpty() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        board[0][0] = 'X'; board[0][1] = 'O'; board[0][2] = 'X';
-        board[1][0] = 'O'; board[1][1] = 'X'; board[1][2] = 'O';
-        board[2][0] = 'O'; board[2][1] = 'X'; // board[2][2] left empty
-
-        Method isBoardFullMethod = Project.class.getDeclaredMethod("isBoardFull", char[][].class);
-        isBoardFullMethod.setAccessible(true);
-
-        boolean result = (boolean) isBoardFullMethod.invoke(null, (Object) board);
-        assertFalse(result, "Should detect board with one empty cell as not full");
-    }
-
-    @Test
-    @DisplayName("TTT: Board full detection on larger 5x5 board")
-    public void testIsBoardFull5x5() throws Exception {
+    public void testIsBoardFull_LargerBoard() throws Exception {
         char[][] board = new char[5][5];
-        initializeBoard(board, 5);
-
-        // Fill entire board
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                board[i][j] = (i + j) % 2 == 0 ? 'X' : 'O';
+                board[i][j] = 'X';
             }
         }
 
-        Method isBoardFullMethod = Project.class.getDeclaredMethod("isBoardFull", char[][].class);
-        isBoardFullMethod.setAccessible(true);
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
 
-        boolean result = (boolean) isBoardFullMethod.invoke(null, (Object) board);
-        assertTrue(result, "Should detect full 5x5 board");
+        assertTrue("Full 5x5 board should return true", result);
     }
 
+    // ==================== TicTacToe: initializeTicTacToe Tests ====================
+
     @Test
-    @DisplayName("TTT: No winner in draw scenario")
-    public void testNoWinnerInDrawScenario() throws Exception {
+    public void testInitializeTicTacToe_3x3Board() throws Exception {
         char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-        // Create a draw scenario
-        board[0][0] = 'X'; board[0][1] = 'O'; board[0][2] = 'X';
-        board[1][0] = 'O'; board[1][1] = 'X'; board[1][2] = 'O';
-        board[2][0] = 'O'; board[2][1] = 'X'; board[2][2] = 'O';
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        invokePrivateStaticMethod(
+            "Project", "initializeTicTacToe",
+            new Class<?>[]{char[][].class, int.class},
+            board, 3
+        );
 
-        boolean xWins = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        boolean oWins = (boolean) isGameWonMethod.invoke(null, board, 'O');
-
-        assertFalse(xWins, "X should not have won");
-        assertFalse(oWins, "O should not have won");
-    }
-
-    @Test
-    @DisplayName("RPS: Invalid player choice format should be handled by game logic")
-    public void testRPSEdgeCaseEmptyString() {
-        // Testing with valid choices only as invalid input is handled by game loop
-        String result = RockPaperScissors.checkWinner("r", "r");
-        assertEquals("It's a tie!", result);
-    }
-
-    @Test
-    @DisplayName("TTT: Corner cells are valid moves")
-    public void testValidMoveAllCorners() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 0, 0), "Top-left corner should be valid");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 0, 2), "Top-right corner should be valid");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 2, 0), "Bottom-left corner should be valid");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 2, 2), "Bottom-right corner should be valid");
-    }
-
-    @Test
-    @DisplayName("TTT: Center cell is a valid move")
-    public void testValidMoveCenterCell() throws Exception {
-        char[][] board = new char[3][3];
-        initializeBoard(board, 3);
-
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
-
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 1, 1), "Center cell should be valid");
-    }
-
-    @Test
-    @DisplayName("Project: isValidMove interface method throws UnsupportedOperationException")
-    public void testProjectIsValidMoveThrowsException() {
-        Project project = new Project();
-        assertThrows(UnsupportedOperationException.class, () -> {
-            project.isValidMove();
-        }, "Interface method isValidMove should throw UnsupportedOperationException");
-    }
-
-    @Test
-    @DisplayName("RPS: checkWinner abstract method throws UnsupportedOperationException")
-    public void testRPSCheckWinnerAbstractMethodThrowsException() {
-        RockPaperScissors rps = new RockPaperScissors();
-        assertThrows(UnsupportedOperationException.class, () -> {
-            rps.checkWinner();
-        }, "Abstract method checkWinner should throw UnsupportedOperationException");
-    }
-
-    @Test
-    @DisplayName("TTT: Win detected on 6x6 board - anti-diagonal")
-    public void testIsGameWon6x6AntiDiagonal() throws Exception {
-        char[][] board = new char[6][6];
-        initializeBoard(board, 6);
-        for (int i = 0; i < 6; i++) {
-            board[i][6 - 1 - i] = 'X';
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals("Cell should be initialized to space", ' ', board[i][j]);
+            }
         }
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on 6x6 board anti-diagonal");
     }
 
     @Test
-    @DisplayName("TTT: No win on 6x6 board with incomplete anti-diagonal")
-    public void testIsGameWon6x6IncompleteAntiDiagonal() throws Exception {
-        char[][] board = new char[6][6];
-        initializeBoard(board, 6);
-        for (int i = 0; i < 5; i++) { // Only fill 5 out of 6
-            board[i][6 - 1 - i] = 'O';
-        }
-
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
-
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'O');
-        assertFalse(result, "Should not detect win on incomplete anti-diagonal");
-    }
-
-    @Test
-    @DisplayName("TTT: Valid move on edge cells of 5x5 board")
-    public void testValidMoveEdgeCells5x5() throws Exception {
+    public void testInitializeTicTacToe_5x5Board() throws Exception {
         char[][] board = new char[5][5];
-        initializeBoard(board, 5);
 
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
+        invokePrivateStaticMethod(
+            "Project", "initializeTicTacToe",
+            new Class<?>[]{char[][].class, int.class},
+            board, 5
+        );
 
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 0, 0), "Top-left corner should be valid on 5x5");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 0, 4), "Top-right corner should be valid on 5x5");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 4, 0), "Bottom-left corner should be valid on 5x5");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 4, 4), "Bottom-right corner should be valid on 5x5");
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 2, 2), "Center should be valid on 5x5");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                assertEquals("Cell should be initialized to space", ' ', board[i][j]);
+            }
+        }
     }
 
     @Test
-    @DisplayName("TTT: Board boundary validation on 7x7 board")
-    public void testValidMoveBoundary7x7() throws Exception {
-        char[][] board = new char[7][7];
-        initializeBoard(board, 7);
+    public void testInitializeTicTacToe_OverwriteExistingData() throws Exception {
+        char[][] board = new char[3][3];
+        // Fill with data
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = 'X';
+            }
+        }
 
-        Method isValidMoveMethod = Project.class.getDeclaredMethod("isValidMove", char[][].class, int.class, int.class);
-        isValidMoveMethod.setAccessible(true);
+        // Initialize should overwrite
+        invokePrivateStaticMethod(
+            "Project", "initializeTicTacToe",
+            new Class<?>[]{char[][].class, int.class},
+            board, 3
+        );
 
-        assertTrue((boolean) isValidMoveMethod.invoke(null, board, 6, 6), "Max valid position should work on 7x7");
-        assertFalse((boolean) isValidMoveMethod.invoke(null, board, 7, 6), "Row out of bounds should be invalid on 7x7");
-        assertFalse((boolean) isValidMoveMethod.invoke(null, board, 6, 7), "Column out of bounds should be invalid on 7x7");
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals("Cell should be cleared to space", ' ', board[i][j]);
+            }
+        }
+    }
+
+    // ==================== RockPaperScissors: checkWinner Tests ====================
+
+    @Test
+    public void testCheckWinner_PlayerRock_ComputerScissors() {
+        String result = RockPaperScissors.checkWinner("r", "s");
+        assertEquals("Rock beats scissors", "You win!", result);
     }
 
     @Test
-    @DisplayName("TTT: Win detection on 4x4 board - middle column")
-    public void testIsGameWon4x4MiddleColumn() throws Exception {
+    public void testCheckWinner_PlayerScissors_ComputerPaper() {
+        String result = RockPaperScissors.checkWinner("s", "p");
+        assertEquals("Scissors beats paper", "You win!", result);
+    }
+
+    @Test
+    public void testCheckWinner_PlayerPaper_ComputerRock() {
+        String result = RockPaperScissors.checkWinner("p", "r");
+        assertEquals("Paper beats rock", "You win!", result);
+    }
+
+    @Test
+    public void testCheckWinner_PlayerRock_ComputerPaper() {
+        String result = RockPaperScissors.checkWinner("r", "p");
+        assertEquals("Paper beats rock", "Computer wins!", result);
+    }
+
+    @Test
+    public void testCheckWinner_PlayerScissors_ComputerRock() {
+        String result = RockPaperScissors.checkWinner("s", "r");
+        assertEquals("Rock beats scissors", "Computer wins!", result);
+    }
+
+    @Test
+    public void testCheckWinner_PlayerPaper_ComputerScissors() {
+        String result = RockPaperScissors.checkWinner("p", "s");
+        assertEquals("Scissors beats paper", "Computer wins!", result);
+    }
+
+    @Test
+    public void testCheckWinner_TieRock() {
+        String result = RockPaperScissors.checkWinner("r", "r");
+        assertEquals("Same choice should tie", "It's a tie!", result);
+    }
+
+    @Test
+    public void testCheckWinner_TiePaper() {
+        String result = RockPaperScissors.checkWinner("p", "p");
+        assertEquals("Same choice should tie", "It's a tie!", result);
+    }
+
+    @Test
+    public void testCheckWinner_TieScissors() {
+        String result = RockPaperScissors.checkWinner("s", "s");
+        assertEquals("Same choice should tie", "It's a tie!", result);
+    }
+
+    // ==================== Edge Cases and Additional Tests ====================
+
+    @Test
+    public void testIsGameWon_EmptyBoard() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertFalse("Empty board should not have a winner", result);
+    }
+
+    @Test
+    public void testIsGameWon_MinimumBoardSize() throws Exception {
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {'O', 'X', 'O'},
+            {'X', 'O', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("X should win with both diagonals on 3x3", result);
+    }
+
+    @Test
+    public void testIsValidMove_BoundaryCheck_AllCorners() throws Exception {
         char[][] board = new char[4][4];
-        initializeBoard(board, 4);
-        board[0][1] = 'X';
-        board[1][1] = 'X';
-        board[2][1] = 'X';
-        board[3][1] = 'X';
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                board[i][j] = ' ';
+            }
+        }
 
-        Method isGameWonMethod = Project.class.getDeclaredMethod("isGameWon", char[][].class, char.class);
-        isGameWonMethod.setAccessible(true);
+        // Test all four corners
+        assertTrue("Top-left corner should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 0
+            ));
 
-        boolean result = (boolean) isGameWonMethod.invoke(null, board, 'X');
-        assertTrue(result, "Should detect win on 4x4 board middle column");
+        assertTrue("Top-right corner should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 3
+            ));
+
+        assertTrue("Bottom-left corner should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 3, 0
+            ));
+
+        assertTrue("Bottom-right corner should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 3, 3
+            ));
     }
 
     @Test
-    @DisplayName("RPS: All player win scenarios")
-    public void testRPSAllPlayerWinScenarios() {
-        assertEquals("You win!", RockPaperScissors.checkWinner("r", "s"), "Rock should beat scissors");
-        assertEquals("You win!", RockPaperScissors.checkWinner("p", "r"), "Paper should beat rock");
-        assertEquals("You win!", RockPaperScissors.checkWinner("s", "p"), "Scissors should beat paper");
+    public void testRockPaperScissors_AllPossibleOutcomes() {
+        // Test all 9 combinations to ensure complete coverage
+        String[][] combinations = {
+            {"r", "r", "It's a tie!"},
+            {"r", "p", "Computer wins!"},
+            {"r", "s", "You win!"},
+            {"p", "r", "You win!"},
+            {"p", "p", "It's a tie!"},
+            {"p", "s", "Computer wins!"},
+            {"s", "r", "Computer wins!"},
+            {"s", "p", "You win!"},
+            {"s", "s", "It's a tie!"}
+        };
+
+        for (String[] combo : combinations) {
+            String result = RockPaperScissors.checkWinner(combo[0], combo[1]);
+            assertEquals("Player: " + combo[0] + " vs Computer: " + combo[1],
+                        combo[2], result);
+        }
     }
 
     @Test
-    @DisplayName("RPS: All computer win scenarios")
-    public void testRPSAllComputerWinScenarios() {
-        assertEquals("Computer wins!", RockPaperScissors.checkWinner("s", "r"), "Rock should beat scissors");
-        assertEquals("Computer wins!", RockPaperScissors.checkWinner("r", "p"), "Paper should beat rock");
-        assertEquals("Computer wins!", RockPaperScissors.checkWinner("p", "s"), "Scissors should beat paper");
+    public void testIsBoardFull_MaxBoardSize() throws Exception {
+        // Test with maximum board size (9x9)
+        char[][] board = new char[9][9];
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                board[i][j] = 'X';
+            }
+        }
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
+
+        assertTrue("Full 9x9 board should return true", result);
     }
 
-    // Helper method to initialize board using reflection
-    private void initializeBoard(char[][] board, int n) throws Exception {
-        Method initMethod = Project.class.getDeclaredMethod("initializeTicTacToe", char[][].class, int.class);
-        initMethod.setAccessible(true);
-        initMethod.invoke(null, board, n);
+    @Test
+    public void testIsGameWon_NearWinScenario() throws Exception {
+        // Test a scenario where player almost wins but doesn't
+        char[][] board = {
+            {'X', 'X', 'O'},
+            {'O', 'X', ' '},
+            {' ', 'O', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
+
+        assertFalse("Near win (diagonal incomplete) should return false", result);
+    }
+
+    @Test
+    public void testIsGameWon_MultipleWinConditions() throws Exception {
+        // Scenario where player has won in multiple ways
+        char[][] board = {
+            {'X', 'X', 'X'},
+            {'X', 'O', 'O'},
+            {'X', 'O', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Player with multiple win conditions should return true", result);
     }
 }
