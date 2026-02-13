@@ -123,7 +123,7 @@ public class Project extends RockPaperScissors implements Skel {
                 if (j != n - 1) {
                     System.out.print(" | ");
                 }
-            }
+            } 
             System.out.println();
             if (i != n - 1) {
                 for (int k = 0; k < n; k++) {
@@ -132,10 +132,10 @@ public class Project extends RockPaperScissors implements Skel {
                         System.out.print("+");
                     }
                 }
-                System.out.println();
+                System.out.print("\n");
             }
         }
-    }
+    } //added line break
 
     private static boolean isValidMove(char[][] board, int row, int col) {
         return row >= 0 && row < board.length && col >= 0 && col < board.length && board[row][col] == ' ';
