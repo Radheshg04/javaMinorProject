@@ -129,7 +129,7 @@ public class Project extends RockPaperScissors implements Skel {
                 if (j != n - 1) {
                     System.out.print(" | ");
                 }
-            }
+            } 
             System.out.println();
             if (i != n - 1) {
                 for (int k = 0; k < n; k++) {
