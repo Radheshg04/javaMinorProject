@@ -704,4 +704,462 @@ public class ProjectTest {
 
         assertTrue("Player with multiple win conditions should return true", result);
     }
+
+    // ==================== Additional Tests for Strengthened Coverage ====================
+
+    @Test
+    public void testIsGameWon_PlayerO_HorizontalWin() throws Exception {
+        // Test that player O can also win (not just X)
+        char[][] board = {
+            {'X', 'X', ' '},
+            {'O', 'O', 'O'},
+            {'X', ' ', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
+
+        assertTrue("Player O horizontal win should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_PlayerO_VerticalWin() throws Exception {
+        char[][] board = {
+            {'O', 'X', 'X'},
+            {'O', 'X', ' '},
+            {'O', ' ', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
+
+        assertTrue("Player O vertical win should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_PlayerO_DiagonalWin() throws Exception {
+        char[][] board = {
+            {'O', 'X', 'X'},
+            {'X', 'O', ' '},
+            {' ', ' ', 'O'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
+
+        assertTrue("Player O diagonal win should return true", result);
+    }
+
+    @Test
+    public void testIsValidMove_CenterCell_3x3() throws Exception {
+        char[][] board = {
+            {'X', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', 'O'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 1, 1
+        );
+
+        assertTrue("Center cell should be valid", result);
+    }
+
+    @Test
+    public void testIsValidMove_CenterCell_Occupied() throws Exception {
+        char[][] board = {
+            {'X', ' ', ' '},
+            {' ', 'O', ' '},
+            {' ', ' ', 'X'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isValidMove",
+            new Class<?>[]{char[][].class, int.class, int.class},
+            board, 1, 1
+        );
+
+        assertFalse("Occupied center cell should be invalid", result);
+    }
+
+    @Test
+    public void testIsValidMove_7x7Board_EdgePositions() throws Exception {
+        char[][] board = new char[7][7];
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                board[i][j] = ' ';
+            }
+        }
+
+        // Test various edge positions
+        assertTrue("Position (0,3) should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 3
+            ));
+
+        assertTrue("Position (6,3) should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 6, 3
+            ));
+
+        assertTrue("Position (3,0) should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 3, 0
+            ));
+
+        assertTrue("Position (3,6) should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 3, 6
+            ));
+    }
+
+    @Test
+    public void testIsGameWon_7x7Board_AntiDiagonalWin() throws Exception {
+        char[][] board = new char[7][7];
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                board[i][j] = ' ';
+            }
+        }
+        // Fill anti-diagonal with X
+        for (int i = 0; i < 7; i++) {
+            board[i][6 - i] = 'X';
+        }
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Anti-diagonal win on 7x7 board should return true", result);
+    }
+
+    @Test
+    public void testIsGameWon_8x8Board_VerticalWinLastColumn() throws Exception {
+        char[][] board = new char[8][8];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                board[i][j] = ' ';
+            }
+        }
+        // Fill last column with O
+        for (int i = 0; i < 8; i++) {
+            board[i][7] = 'O';
+        }
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
+
+        assertTrue("Vertical win in last column of 8x8 board should return true", result);
+    }
+
+    @Test
+    public void testIsBoardFull_7x7Board_AlmostFull() throws Exception {
+        char[][] board = new char[7][7];
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                board[i][j] = 'X';
+            }
+        }
+        board[6][6] = ' '; // One empty cell
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
+
+        assertFalse("7x7 board with one empty cell should return false", result);
+    }
+
+    @Test
+    public void testInitializeTicTacToe_7x7Board() throws Exception {
+        char[][] board = new char[7][7];
+        // Pre-fill with data
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                board[i][j] = 'Z';
+            }
+        }
+
+        invokePrivateStaticMethod(
+            "Project", "initializeTicTacToe",
+            new Class<?>[]{char[][].class, int.class},
+            board, 7
+        );
+
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                assertEquals("Cell should be initialized to space", ' ', board[i][j]);
+            }
+        }
+    }
+
+    @Test
+    public void testInitializeTicTacToe_MaxBoardSize() throws Exception {
+        char[][] board = new char[9][9];
+
+        invokePrivateStaticMethod(
+            "Project", "initializeTicTacToe",
+            new Class<?>[]{char[][].class, int.class},
+            board, 9
+        );
+
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                assertEquals("Cell in 9x9 board should be initialized to space", ' ', board[i][j]);
+            }
+        }
+    }
+
+    @Test
+    public void testIsGameWon_ComplexBoardState_NoWinner() throws Exception {
+        // Complex board where no one has won yet
+        char[][] board = {
+            {'X', 'O', 'X', 'O'},
+            {'O', 'X', 'O', 'X'},
+            {'X', 'O', 'X', 'O'},
+            {'O', 'X', ' ', ' '}
+        };
+
+        boolean resultX = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        boolean resultO = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'O'
+        );
+
+        assertFalse("Complex board with no winner for X should return false", resultX);
+        assertFalse("Complex board with no winner for O should return false", resultO);
+    }
+
+    @Test
+    public void testIsValidMove_SequentialMoves() throws Exception {
+        // Test making sequential moves
+        char[][] board = new char[3][3];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = ' ';
+            }
+        }
+
+        // First move should be valid
+        assertTrue("First move should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 0
+            ));
+
+        // Make the move
+        board[0][0] = 'X';
+
+        // Same position should now be invalid
+        assertFalse("Same position should be invalid after move",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 0
+            ));
+
+        // Adjacent position should still be valid
+        assertTrue("Adjacent position should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 1
+            ));
+    }
+
+    @Test
+    public void testIsGameWon_PartialDiagonal_NoWin() throws Exception {
+        // Diagonal is partially filled but not complete
+        char[][] board = {
+            {'X', 'O', ' '},
+            {'O', 'X', ' '},
+            {' ', ' ', 'O'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertFalse("Partial diagonal should not win", result);
+    }
+
+    @Test
+    public void testIsBoardFull_SingleRow() throws Exception {
+        // Edge case: check board isn't prematurely considered full
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
+
+        assertFalse("Board with only one row filled should return false", result);
+    }
+
+    @Test
+    public void testCheckWinner_RegressionTest_AllCombinations() {
+        // Regression test to ensure all 9 outcomes remain stable
+        assertEquals("r vs r", "It's a tie!", RockPaperScissors.checkWinner("r", "r"));
+        assertEquals("r vs p", "Computer wins!", RockPaperScissors.checkWinner("r", "p"));
+        assertEquals("r vs s", "You win!", RockPaperScissors.checkWinner("r", "s"));
+        assertEquals("p vs r", "You win!", RockPaperScissors.checkWinner("p", "r"));
+        assertEquals("p vs p", "It's a tie!", RockPaperScissors.checkWinner("p", "p"));
+        assertEquals("p vs s", "Computer wins!", RockPaperScissors.checkWinner("p", "s"));
+        assertEquals("s vs r", "Computer wins!", RockPaperScissors.checkWinner("s", "r"));
+        assertEquals("s vs p", "You win!", RockPaperScissors.checkWinner("s", "p"));
+        assertEquals("s vs s", "It's a tie!", RockPaperScissors.checkWinner("s", "s"));
+    }
+
+    @Test
+    public void testIsValidMove_MaxBoardSize_OutOfBounds() throws Exception {
+        char[][] board = new char[9][9];
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                board[i][j] = ' ';
+            }
+        }
+
+        // Test boundary at index 9 (should be out of bounds)
+        assertFalse("Index 9 on 9x9 board should be out of bounds",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 9, 0
+            ));
+
+        assertFalse("Index 9 on 9x9 board should be out of bounds",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, 9
+            ));
+
+        // Test valid boundary at index 8 (should be valid)
+        assertTrue("Index 8 on 9x9 board should be valid",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 8, 8
+            ));
+    }
+
+    @Test
+    public void testIsGameWon_6x6Board_HorizontalLastRow() throws Exception {
+        char[][] board = new char[6][6];
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                board[i][j] = ' ';
+            }
+        }
+        // Fill last row with X
+        for (int j = 0; j < 6; j++) {
+            board[5][j] = 'X';
+        }
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertTrue("Horizontal win in last row of 6x6 board should return true", result);
+    }
+
+    @Test
+    public void testIsBoardFull_MixedBoard() throws Exception {
+        // Board with mixed X and O, completely filled
+        char[][] board = {
+            {'X', 'O', 'X'},
+            {'O', 'O', 'X'},
+            {'X', 'X', 'O'}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isBoardFull",
+            new Class<?>[]{char[][].class},
+            (Object) board
+        );
+
+        assertTrue("Mixed full board should return true", result);
+    }
+
+    @Test
+    public void testIsValidMove_ExtremeNegativeIndices() throws Exception {
+        char[][] board = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        assertFalse("Large negative row should return false",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, -100, 0
+            ));
+
+        assertFalse("Large negative column should return false",
+            (boolean) invokePrivateStaticMethod(
+                "Project", "isValidMove",
+                new Class<?>[]{char[][].class, int.class, int.class},
+                board, 0, -100
+            ));
+    }
+
+    @Test
+    public void testIsGameWon_OnlyOneCell_NoWin() throws Exception {
+        // Single cell filled should not result in a win
+        char[][] board = {
+            {'X', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+
+        boolean result = (boolean) invokePrivateStaticMethod(
+            "Project", "isGameWon",
+            new Class<?>[]{char[][].class, char.class},
+            board, 'X'
+        );
+
+        assertFalse("Single cell should not result in win", result);
+    }
 }
