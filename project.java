@@ -115,6 +115,12 @@ public class Project extends RockPaperScissors implements Skel {
         }
     }
 
+    /**
+     * Prints the Tic Tac Toe board to standard output using rows, columns and visual separators.
+     *
+     * @param board a two-dimensional char array representing the board cells; empty cells are expected to contain a space character
+     * @param n     the board dimension (number of rows and columns) to render from the provided array
+     */
     private static void printTicTacToe(char[][] board, int n) {
         System.out.println("Tic Tac Toe board:");
         for (int i = 0; i < n; i++) {
