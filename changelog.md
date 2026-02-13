@@ -1,1 +1,1 @@
-- chore: add changelog
+- fix: fix changelog
