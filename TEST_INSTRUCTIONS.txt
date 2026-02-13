@@ -1,0 +1,108 @@
+TESTING INSTRUCTIONS
+====================
+
+This directory contains comprehensive test suites for the Java project files.
+
+TEST FILES:
+-----------
+1. ProjectTest.java - 33 comprehensive tests for the Tic Tac Toe game logic
+   - Tests for board initialization (initializeTicTacToe)
+   - Tests for move validation (isValidMove)
+   - Tests for win detection (isGameWon) - all directions
+   - Tests for board state checking (isBoardFull)
+   - Edge cases, boundary tests, and regression tests
+   - Tests for various board sizes (3x3, 4x4, 5x5, 9x9)
+
+2. RockPaperScissorsTest.java - 18 comprehensive tests for Rock Paper Scissors game
+   - Tests for all 9 possible game combinations (r-r, r-p, r-s, p-r, p-p, p-s, s-r, s-p, s-s)
+   - Tests for player wins, computer wins, and ties
+   - Tests for game logic symmetry and circular property
+   - Deterministic behavior verification
+   - Performance stress test
+   - Regression tests for exact victory conditions
+
+MARKDOWN FILES:
+---------------
+The following files are documentation and do not require unit tests:
+- changelog.md
+- changes.md
+
+HOW TO COMPILE AND RUN TESTS:
+------------------------------
+
+Option 1: Using the provided scripts (Linux/Mac)
+   1. Make the scripts executable:
+      chmod +x compile_tests.sh run_tests.sh
+
+   2. Compile the tests:
+      ./compile_tests.sh
+
+   3. Run the tests:
+      ./run_tests.sh
+
+Option 2: Manual compilation and execution
+   1. Download JUnit 5 Platform Console Standalone JAR:
+      wget https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.9.3/junit-platform-console-standalone-1.9.3.jar
+
+   2. Compile the main source file:
+      javac project.java
+
+   3. Compile the test files:
+      javac -cp ".:junit-platform-console-standalone-1.9.3.jar" ProjectTest.java RockPaperScissorsTest.java
+
+   4. Run the tests:
+      java -jar junit-platform-console-standalone-1.9.3.jar --class-path . --scan-class-path
+
+Option 3: Using Maven (if you have pom.xml)
+   1. Add JUnit 5 dependency to pom.xml:
+      <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>5.9.3</version>
+          <scope>test</scope>
+      </dependency>
+
+   2. Place test files in src/test/java directory
+   3. Run: mvn test
+
+Option 4: Using Gradle (if you have build.gradle)
+   1. Add JUnit 5 dependency to build.gradle:
+      testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+
+   2. Place test files in src/test/java directory
+   3. Run: gradle test
+
+WINDOWS USERS:
+--------------
+Replace ':' with ';' in classpath when compiling:
+   javac -cp ".;junit-platform-console-standalone-1.9.3.jar" ProjectTest.java RockPaperScissorsTest.java
+
+TEST COVERAGE:
+--------------
+The test suites provide comprehensive coverage including:
+- Normal operation tests
+- Boundary condition tests (e.g., board edges, maximum size)
+- Edge cases (e.g., empty boards, full boards, one cell remaining)
+- Negative tests (e.g., invalid moves, out of bounds)
+- Regression tests (e.g., anti-diagonal wins, exact victory conditions)
+- Stress tests (e.g., performance with many calls)
+- Consistency tests (e.g., deterministic behavior)
+
+EXPECTED RESULTS:
+-----------------
+All tests should pass when run against the provided project.java file.
+
+Total tests: 51 (33 ProjectTest + 18 RockPaperScissorsTest)
+
+If any tests fail, check:
+1. Java version (requires Java 8 or higher)
+2. JUnit version (tests use JUnit 5 / Jupiter)
+3. Compilation errors or warnings
+4. Correct file paths and classpath settings
+
+NOTES:
+------
+- The tests use reflection to access private static methods in the Project class
+- Some tests verify that unimplemented interface/abstract methods throw UnsupportedOperationException
+- Tests are independent and can be run in any order
+- No test setup requires external resources or dependencies beyond JUnit
