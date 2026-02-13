@@ -99,7 +99,7 @@ public class Project extends RockPaperScissors implements Skel {
                     System.out.println("It's a draw!");
                     gameEnded = true;
                 }
-  
+
                 currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
             } else {
                 System.out.println("Invalid move. Try again.");
@@ -132,7 +132,7 @@ public class Project extends RockPaperScissors implements Skel {
                         System.out.print("+");
                     }
                 }
-                System.out.println();
+                System.out.print("\n");
             }
         }
     }
