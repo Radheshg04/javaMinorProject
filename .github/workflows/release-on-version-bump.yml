@@ -1,0 +1,64 @@
+# Triggers a release when version.md is updated with a new (higher) version
+name: Release on Version Bump
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - version.md
+
+jobs:
+  check-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to create releases and tags
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # need previous commit to compare version
+
+      - name: Get current version
+        id: current
+        run: |
+          NEW_VERSION=$(sed -n '1p' version.md | tr -d '[:space:]')
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $NEW_VERSION"
+
+      - name: Get previous version
+        id: previous
+        run: |
+          OLD_VERSION=$(git show HEAD^:version.md 2>/dev/null | sed -n '1p' | tr -d '[:space:]') || OLD_VERSION="0.0.0"
+          echo "version=$OLD_VERSION" >> $GITHUB_OUTPUT
+          echo "Previous version: $OLD_VERSION"
+
+      - name: Compare versions (semver)
+        id: bump
+        run: |
+          # Simple semver comparison: major.minor.patch
+          ver_to_num() {
+            echo "$1" | awk -F. '{ printf("%d%03d%03d\n", $1+0, $2+0, $3+0); }'
+          }
+          NEW="${{ steps.current.outputs.version }}"
+          OLD="${{ steps.previous.outputs.version }}"
+          NEW_NUM=$(ver_to_num "$NEW")
+          OLD_NUM=$(ver_to_num "$OLD")
+          if [ "$NEW_NUM" -gt "$OLD_NUM" ]; then
+            echo "is_bump=true" >> $GITHUB_OUTPUT
+            echo "Version bump detected: $OLD -> $NEW"
+          else
+            echo "is_bump=false" >> $GITHUB_OUTPUT
+            echo "No version bump (current $NEW not greater than $OLD); skipping release"
+          fi
+
+      - name: Create Release
+        if: steps.bump.outputs.is_bump == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.current.outputs.version }}
+          name: Release v${{ steps.current.outputs.version }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
